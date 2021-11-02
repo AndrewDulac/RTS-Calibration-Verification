@@ -41,14 +41,19 @@ df = pd.read_excel(fn, skiprows=(row-1))
 df.columns = df.columns.str.replace("\"","")
 df.columns = df.columns.str.replace(" ","")
 cols = df.columns
+v1to3pop = False
 
 expectedVals = {
     "VA": [25,50,75,100,125,150,175,200,225,250],
     "VB": [25,50,75,100,125,150,175,200,225,250],
     "VC": [25,50,75,100,125,150,175,200,225,250],
-    "IA": [1,2,3,4,5],
-    "IB": [1,2,3,4,5],
-    "IC": [1,2,3,4,5],
+    "IA": [1,2,3,4,5,6],
+    "IB": [1,2,3,4,5,6],
+    "IC": [1,2,3,4,5,6],
+    "PFDA": [0, 60, 120, 180, -120, -60],
+    "PFDB": [0, 60, 120, 180, -120, -60],
+    "PFDC": [0, 60, 120, 180, -120, -60],
+
 }
 
 doubleExpectedVals = {
@@ -95,13 +100,33 @@ doubleTolerances = {
     "I6": 0.3,
 }
 
-results = {
-    "VA_3SEC": [None] * len(expectedVals["VA_3SEC"]),
-    "VB_3SEC": [None] * len(expectedVals["VB_3SEC"]),
-    "VC_3SEC": [None] * len(expectedVals["VC_3SEC"]),
-    "IA_3SEC": [None] * len(expectedVals["IA_3SEC"]),
-    "IB_3SEC": [None] * len(expectedVals["IB_3SEC"]),
-    "IC_3SEC": [None] * len(expectedVals["IC_3SEC"]),
+tests = {
+    "TYPE": ["START"],
+    "V1": [0],
+    "V2": [0],
+    "V3": [0],
+    "V4": [0],
+    "V5": [0],
+    "V6": [0],    
+    "I1": [0],
+    "I2": [0],
+    "I3": [0],
+    "I4": [0],
+    "I5": [0],
+    "I6": [0],
+    "PV1": [0],
+    "PV2": [0],
+    "PV3": [0],
+    "PV4": [0],
+    "PV5": [0],
+    "PV6": [0],
+    "PI1": [0],
+    "PI2": [0],
+    "PI3": [0],
+    "PI4": [0],
+    "PI5": [0],
+    "PI6": [0],
+
 }
 
 dobleResults = {
@@ -133,7 +158,6 @@ dobleResults = {
 }
 
 def CompareWithTolerance(expectedVal, val, tolerance):
-    if(expectedVal )
     decimalPercent = tolerance / 200.0
     highRange = expectedVal * (1.0 + decimalPercent)
     lowRange = expectedVal * (1.0 - decimalPercent)
@@ -143,10 +167,124 @@ def CompareWithTolerance(expectedVal, val, tolerance):
         return False    
 
 def FilterAndIdentify(row):
-    for column in doubleExpectedVals:
-        if( CompareWithTolerance(doubleExpectedVals["VA"], row["VA"], 1) and
-            CompareWithTolerance(doubleExpectedVals["VB"], row["VB"], 1) and
-            CompareWithTolerance(doubleExpectedVals["VC"], row["VC"], 1)
+    for expectedVal in expectedVals["VA"]:
+        if( CompareWithTolerance(expectedVal, row["VA"], 1) and
+            CompareWithTolerance(expectedVal, row["VB"], 1) and
+            CompareWithTolerance(expectedVal, row["VB"], 1) and
+            CompareWithTolerance(0, row["IA"], 1) and
+            CompareWithTolerance(0, row["IB"], 1) and
+            CompareWithTolerance(0, row["IC"], 1) and
+            CompareWithTolerance(1, row["PFDA"], .1) and
+            CompareWithTolerance(1, row["PFDB"], .1) and
+            CompareWithTolerance(1, row["PFDC"], .1)
+            ):
+            if(v1to3pop):
+                tests["TYPE"].append("VOLTAGE4-6")
+            else:
+                tests["TYPE"].append("VOLTAGE1-3")
+            tests["VA"].append(row["VA"])
+            tests["VB"].append(row["VB"])
+            tests["VC"].append(row["VC"])
+            tests["IA"].append(0)
+            tests["IB"].append(0)
+            tests["IC"].append(0)
+            tests["PFDA"].append(0)
+            tests["PFDB"].append(0)
+            tests["PFDC"].append(0)
+
+
+    for expectedVal in expectedVals["PFDA"]:
+        if(CompareWithTolerance(5, row["VA"], 1) and
+            CompareWithTolerance(5, row["VB"], 1) and
+            CompareWithTolerance(5, row["VB"], 1) and
+            CompareWithTolerance(1, row["IA"], 1) and
+            CompareWithTolerance(1, row["IB"], 1) and
+            CompareWithTolerance(1, row["IC"], 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDA"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDB"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDC"]), 1)
+            ):
+            if(v1to3pop):
+                tests["TYPE"].append("PHASE4-6at5V")
+            else:
+                tests["TYPE"].append("PHASE1-3at5V")
+            
+            tests["VA"].append(0)
+            tests["VB"].append(0)
+            tests["VC"].append(0)
+            tests["IA"].append(0)
+            tests["IB"].append(0)
+            tests["IC"].append(0)
+            tests["PFDA"].append(np.arccos(row["PFDA"]))
+            tests["PFDB"].append(np.arccos(row["PFDB"]))
+            tests["PFDC"].append(np.arccos(row["PFDC"]))
+
+        elif(CompareWithTolerance(50, row["VA"], 1) and
+            CompareWithTolerance(50, row["VB"], 1) and
+            CompareWithTolerance(50, row["VB"], 1) and
+            CompareWithTolerance(1, row["IA"], 1) and
+            CompareWithTolerance(1, row["IB"], 1) and
+            CompareWithTolerance(1, row["IC"], 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDA"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDB"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDC"]), 1)
+            ):
+            tests["TYPE"].append("PHASE50V")
+            tests["VA"].append(0)
+            tests["VB"].append(0)
+            tests["VC"].append(0)
+            tests["IA"].append(0)
+            tests["IB"].append(0)
+            tests["IC"].append(0)
+            tests["PFDA"].append(np.arccos(row["PFDA"]))
+            tests["PFDB"].append(np.arccos(row["PFDB"]))
+            tests["PFDC"].append(np.arccos(row["PFDC"]))
+
+        elif(CompareWithTolerance(100, row["VA"], 1) and
+            CompareWithTolerance(100, row["VB"], 1) and
+            CompareWithTolerance(100, row["VB"], 1) and
+            CompareWithTolerance(1, row["IA"], 1) and
+            CompareWithTolerance(1, row["IB"], 1) and
+            CompareWithTolerance(1, row["IC"], 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDA"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDB"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDC"]), 1)
+            ):
+            tests["TYPE"].append("PHASE100V")
+            tests["VA"].append(0)
+            tests["VB"].append(0)
+            tests["VC"].append(0)
+            tests["IA"].append(0)
+            tests["IB"].append(0)
+            tests["IC"].append(0)
+            tests["PFDA"].append(np.arccos(row["PFDA"]))
+            tests["PFDB"].append(np.arccos(row["PFDB"]))
+            tests["PFDC"].append(np.arccos(row["PFDC"]))
+
+        elif(CompareWithTolerance(150, row["VA"], 1) and
+            CompareWithTolerance(150, row["VB"], 1) and
+            CompareWithTolerance(150, row["VB"], 1) and
+            CompareWithTolerance(1, row["IA"], 1) and
+            CompareWithTolerance(1, row["IB"], 1) and
+            CompareWithTolerance(1, row["IC"], 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDA"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDB"]), 1) and
+            CompareWithTolerance(expectedVal, np.arccos(row["PFDC"]), 1)
+            ):
+            tests["TYPE"].append("PHASE150V")
+            tests["VA"].append(0)
+            tests["VB"].append(0)
+            tests["VC"].append(0)
+            tests["IA"].append(0)
+            tests["IB"].append(0)
+            tests["IC"].append(0)
+            tests["PFDA"].append(np.arccos(row["PFDA"]))
+            tests["PFDB"].append(np.arccos(row["PFDB"]))
+            tests["PFDC"].append(np.arccos(row["PFDC"]))
+            if(CompareWithTolerance(-60, np.arccos(row["PFDA"]), 1)):
+                v1to3pop = True
+            
+            
     return row
 
 
