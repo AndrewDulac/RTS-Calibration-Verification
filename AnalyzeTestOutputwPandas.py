@@ -46,7 +46,7 @@ if(fn.endswith('.csv')):
 
                 except ValueError:
                     ws[('%s%s'%(column_letter, (row_index + 1)))].value = cell
-    temppath = os.path.dirname(os.path.realpath(__file__)) + '\\data\\DATAFILE.xlsx'
+    temppath = os.path.dirname(os.path.realpath(__file__)) + '\\data\\.DataCopy.xlsx'
     wb.save(temppath)
 else:
     wb = load_workbook(fn)
@@ -315,7 +315,7 @@ df.set_index('Time', inplace=True)
 
 df.apply(lambda x: FilterAndIdentify(x), axis = 1)
 testdf = pd.DataFrame(tests, columns = testcols)
-testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + "\\DATAFILE.xlsx")
+testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\.FilteredData.xlsx")
 
 templatedf = pd.read_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx", )
 currentItem = None
