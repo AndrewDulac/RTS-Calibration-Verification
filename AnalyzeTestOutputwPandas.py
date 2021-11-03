@@ -126,7 +126,11 @@ doubleTolerances = {
 }
 
 tests = []
-testcols = ["TYPE", "V1", "V2", "V3", "V4", "V5", "V6", "V1P", "V2P", "V3P", "V4P", "V5P", "V6P", "I1", "I2", "I3", "I4", "I5", "I6", "I1P", "I2P", "I3P", "I4P", "I5P", "I6P"]
+testcols = ["TYPE","EXPECTEDVAL",
+            "V1", "V2", "V3", "V4", "V5", "V6",
+            "Phase(V1)", "Phase(V2)", "Phase(V3)", "Phase(V4)", "Phase(V5)", "Phase(V6)",
+            "I1", "I2", "I3", "I4", "I5", "I6",
+            "Phase(I1)", "Phase(I2)", "Phase(I3)", "Phase(I4)", "Phase(I5)", "Phase(I6)"]
 
 def CompareWithTolerance(expectedVal, val, tolerance):
     decimalPercent = tolerance / 200.0
@@ -171,9 +175,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(1, row["PFDC"], .1)
             ):
             if(v1to3pop):
-                tests.append(["V4to6", 0,0,0,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["V4to6",expectedVal, 0,0,0,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
             else:
-                tests.append(["V1to3",row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["V1to3",expectedVal,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
     for expectedVal in expectedVals["PFDA"]:
         if(CompareWithTolerance(5, row["VA"], 1) and
@@ -187,9 +191,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(v1to3pop):
-                tests.append(["P5V4to6", 0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P5V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
             else:
-                tests.append(["P5V1to3",0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P5V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
         elif(CompareWithTolerance(50, row["VA"], 1) and
             CompareWithTolerance(50, row["VB"], 1) and
@@ -202,9 +206,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(v1to3pop):
-                tests.append(["P50V4to6", 0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P50V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
             else:
-                tests.append(["P50V1to3",0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P50V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
         elif(CompareWithTolerance(100, row["VA"], 1) and
             CompareWithTolerance(100, row["VB"], 1) and
@@ -217,9 +221,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(v1to3pop):
-                tests.append(["P100V4to6", 0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P100V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
             else:
-                tests.append(["P100V1to3",0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P100V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
         elif(CompareWithTolerance(150, row["VA"], 1) and
             CompareWithTolerance(150, row["VB"], 1) and
@@ -232,9 +236,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(v1to3pop):
-                tests.append(["P150V4to6", 0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P150V4to6", expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
             else:
-                tests.append(["P150V1to3",0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                tests.append(["P150V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
             if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
                 setv1to3True()
 
@@ -250,9 +254,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(1, row["PFDC"], .1)
             ):
             if(i1to3pop):
-                tests.append(["I4to6", 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0])
+                tests.append(["I4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0])
             else:
-                tests.append(["I1to3", 0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0])
+                tests.append(["I1to3",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0])
             
     for expectedVal in expectedVals["PFDA"]:
         if(CompareWithTolerance(10, row["VA"], 1) and
@@ -266,9 +270,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(i1to3pop):
-                tests.append(["P1A4to6", 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
+                tests.append(["P1A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
             else:
-                tests.append(["P1A1to3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
+                tests.append(["P1A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
 
         elif(CompareWithTolerance(10, row["VA"], 1) and
             CompareWithTolerance(10, row["VB"], 1) and
@@ -281,9 +285,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(i1to3pop):
-                tests.append(["P3A4to6", 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
+                tests.append(["P3A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
             else:
-                tests.append(["P3A1to3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
+                tests.append(["P3A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
 
         elif(CompareWithTolerance(10, row["VA"], 1) and
             CompareWithTolerance(10, row["VB"], 1) and
@@ -296,9 +300,9 @@ def FilterAndIdentify(row):
             CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
             ):
             if(i1to3pop):
-                tests.append(["P6A4to6", 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
+                tests.append(["P6A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
             else:
-                tests.append(["P6A1to3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
+                tests.append(["P6A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0])
             if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
                 seti1to3True()
 
@@ -311,6 +315,40 @@ df.set_index('Time', inplace=True)
 
 df.apply(lambda x: FilterAndIdentify(x), axis = 1)
 testdf = pd.DataFrame(tests, columns = testcols)
-testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + '\\data\\DATAFILE.xlsx')
-df.head(5)
+testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + "\\DATAFILE.xlsx")
+
+templatedf = pd.read_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx", )
+currentItem = None
+
+wb2 = load_workbook(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx")
+
+templatews1 = wb2.worksheets[0]
+
+def SetCurrentItem(val):
+    global currentItem
+    currentItem = val
+
+def GetTestResults(row):
+    if( isinstance(row["Item"], str)):
+        SetCurrentItem(row["Item"])
+    else:
+        print(type(row["Item"]))
+    tempdf = testdf[(testdf == float(row["Level"]) ).any(axis = 1)]
+    tempdf = tempdf.filter(items = [currentItem])
+    tempdf = tempdf[(tempdf != 0).any(axis = 1)]
+    tempdf["Dif"] = np.absolute(tempdf[currentItem] - row["Level"])
+    maxdev = tempdf.iloc[tempdf['Dif'].argmax(), 0]
+    results.append(maxdev)
+    print(tempdf.head(5))
+
+results = []
+
+templatedf.apply(lambda x: GetTestResults(x), axis = 1)
+i = 2
+for item in results:
+    templatews1.cell(i, 5).value = item
+    i = i+1
+
+wb2.save(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx")
+
 
