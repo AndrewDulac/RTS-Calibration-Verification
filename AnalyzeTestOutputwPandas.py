@@ -68,7 +68,7 @@ df.columns = df.columns.str.replace(" ","")
 cols = df.columns
 
 phaseTests = {
-    "LVPT": [["P5V4to6", "P5V1to3", 1],
+    "LVPT": [["P5V4to6", "P5V1to3", 5],
              ["P50V4to6", "P50V1to3", 50],
              ["P100V4to6", "P100V1to3", 100], 
              ["P150V4to6", "P150V1to3", 150] ],
@@ -77,14 +77,14 @@ phaseTests = {
              ["P3A4to6", "P3A1to3", 3],
              ["P6A4to6", "P6A1to3", 6] ],
 
-    "HVPT": [["P5HV4to6", "P5HV1to3", 1],
-             ["P50HV4to6", "P50HV1to3", 50],
-             ["P100HV4to6", "P100HV1to3", 100], 
-             ["P150HV4to6", "P150HV1to3", 150] ],
+    "HVPT": [["P5HV", 5],
+             ["P50HV", 50],
+             ["P100HV", 100], 
+             ["P150HV", 150] ],
 
-    "HIPT": [["P1HA4to6", "P1HA1to3", 1],
-             ["P3HA4to6", "P3HA1to3", 3],
-             ["P6HA4to6", "P6HA1to3", 6] ],
+    "HIPT": [["P1HA", 1],
+             ["P3HA", 3],
+             ["P6HA", 6] ],
 }
 
 expectedVals = {
@@ -148,181 +148,228 @@ def seti4to6False():
     global i4to6pop
     i4to6pop = False
 
+vlowcomplete = False
+# I STILL can't believe I need to do this...
+def setvlowcompletetrue():
+    global vlowcomplete
+    vlowcomplete = True
+def setvlowcompleteFalse():
+    global vlowcomplete
+    vlowcomplete = False
+
 def FilterAndIdentify(row):
+    if(vlowcomplete != True):
+        for expectedVal in expectedVals["VA"]:
+            if(CompareWithTolerance(expectedVal, row["VA"], 1) and
+                CompareWithTolerance(expectedVal, row["VB"], 1) and
+                CompareWithTolerance(expectedVal, row["VC"], 1) and
+                CompareWithTolerance(0, row["IA"], 1) and
+                CompareWithTolerance(0, row["IB"], 1) and
+                CompareWithTolerance(0, row["IC"], 1) and
+                CompareWithTolerance(1, row["PFDA"], .1) and
+                CompareWithTolerance(1, row["PFDB"], .1) and
+                CompareWithTolerance(1, row["PFDC"], .1)
+                ):
+                if(v1to3pop):
+                    tests.append(["V4to6",expectedVal, 0,0,0,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["V1to3",expectedVal,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-    for expectedVal in expectedVals["VA"]:
-        if(CompareWithTolerance(expectedVal, row["VA"], 1) and
-            CompareWithTolerance(expectedVal, row["VB"], 1) and
-            CompareWithTolerance(expectedVal, row["VB"], 1) and
-            CompareWithTolerance(0, row["IA"], 1) and
-            CompareWithTolerance(0, row["IB"], 1) and
-            CompareWithTolerance(0, row["IC"], 1) and
-            CompareWithTolerance(1, row["PFDA"], .1) and
-            CompareWithTolerance(1, row["PFDB"], .1) and
-            CompareWithTolerance(1, row["PFDC"], .1)
-            ):
-            if(v1to3pop):
-                tests.append(["V4to6",expectedVal, 0,0,0,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["V1to3",expectedVal,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+        for expectedVal in expectedVals["PFDA"]:
+            if(CompareWithTolerance(5, row["VA"], 1) and
+                CompareWithTolerance(5, row["VB"], 1) and
+                CompareWithTolerance(5, row["VC"], 1) and
+                CompareWithTolerance(1, row["IA"], 1) and
+                CompareWithTolerance(1, row["IB"], 1) and
+                CompareWithTolerance(1, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(v1to3pop):
+                    tests.append(["P5V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P5V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-    for expectedVal in expectedVals["PFDA"]:
-        if(CompareWithTolerance(5, row["VA"], 1) and
-            CompareWithTolerance(5, row["VB"], 1) and
-            CompareWithTolerance(5, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(v1to3pop):
-                tests.append(["P5V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P5V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+            elif(CompareWithTolerance(50, row["VA"], 1) and
+                CompareWithTolerance(50, row["VB"], 1) and
+                CompareWithTolerance(50, row["VC"], 1) and
+                CompareWithTolerance(1, row["IA"], 1) and
+                CompareWithTolerance(1, row["IB"], 1) and
+                CompareWithTolerance(1, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(v1to3pop):
+                    tests.append(["P50V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P50V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-        elif(CompareWithTolerance(50, row["VA"], 1) and
-            CompareWithTolerance(50, row["VB"], 1) and
-            CompareWithTolerance(50, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(v1to3pop):
-                tests.append(["P50V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P50V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+            elif(CompareWithTolerance(100, row["VA"], 1) and
+                CompareWithTolerance(100, row["VB"], 1) and
+                CompareWithTolerance(100, row["VC"], 1) and
+                CompareWithTolerance(1, row["IA"], 1) and
+                CompareWithTolerance(1, row["IB"], 1) and
+                CompareWithTolerance(1, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(v1to3pop):
+                    tests.append(["P100V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P100V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-        elif(CompareWithTolerance(100, row["VA"], 1) and
-            CompareWithTolerance(100, row["VB"], 1) and
-            CompareWithTolerance(100, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(v1to3pop):
-                tests.append(["P100V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P100V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+            elif(CompareWithTolerance(150, row["VA"], 1) and
+                CompareWithTolerance(150, row["VB"], 1) and
+                CompareWithTolerance(150, row["VC"], 1) and
+                CompareWithTolerance(1, row["IA"], 1) and
+                CompareWithTolerance(1, row["IB"], 1) and
+                CompareWithTolerance(1, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(v1to3pop):
+                    tests.append(["P150V4to6", expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P150V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
+                    setv1to3True()
 
-        elif(CompareWithTolerance(150, row["VA"], 1) and
-            CompareWithTolerance(150, row["VB"], 1) and
-            CompareWithTolerance(150, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(v1to3pop):
-                tests.append(["P150V4to6", expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P150V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
-                setv1to3True()
+        for expectedVal in expectedVals["IA"]:
+            if( CompareWithTolerance(0, row["VA"], 1) and
+                CompareWithTolerance(0, row["VB"], 1) and
+                CompareWithTolerance(0, row["VC"], 1) and
+                CompareWithTolerance(expectedVal, row["IA"], 1) and
+                CompareWithTolerance(expectedVal, row["IB"], 1) and
+                CompareWithTolerance(expectedVal, row["IC"], 1) and
+                CompareWithTolerance(1, row["PFDA"], .1) and
+                CompareWithTolerance(1, row["PFDB"], .1) and
+                CompareWithTolerance(1, row["PFDC"], .1)
+                ):
+                if(i1to3pop):
+                    tests.append(["I4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["I1to3",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                
+        for expectedVal in expectedVals["PFDA"]:
+            if(CompareWithTolerance(10, row["VA"], 1) and
+                CompareWithTolerance(10, row["VB"], 1) and
+                CompareWithTolerance(10, row["VC"], 1) and
+                CompareWithTolerance(1, row["IA"], 1) and
+                CompareWithTolerance(1, row["IB"], 1) and
+                CompareWithTolerance(1, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(i1to3pop):
+                    tests.append(["P1A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P1A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-    for expectedVal in expectedVals["IA"]:
-        if( CompareWithTolerance(0, row["VA"], 1) and
-            CompareWithTolerance(0, row["VB"], 1) and
-            CompareWithTolerance(0, row["VB"], 1) and
-            CompareWithTolerance(expectedVal, row["IA"], 1) and
-            CompareWithTolerance(expectedVal, row["IB"], 1) and
-            CompareWithTolerance(expectedVal, row["IC"], 1) and
-            CompareWithTolerance(1, row["PFDA"], .1) and
-            CompareWithTolerance(1, row["PFDB"], .1) and
-            CompareWithTolerance(1, row["PFDC"], .1)
-            ):
-            if(i1to3pop):
-                tests.append(["I4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["I1to3",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            
-    for expectedVal in expectedVals["PFDA"]:
-        if(CompareWithTolerance(10, row["VA"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(i1to3pop):
-                tests.append(["P1A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P1A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+            elif(CompareWithTolerance(10, row["VA"], 1) and
+                CompareWithTolerance(10, row["VB"], 1) and
+                CompareWithTolerance(10, row["VC"], 1) and
+                CompareWithTolerance(3, row["IA"], 1) and
+                CompareWithTolerance(3, row["IB"], 1) and
+                CompareWithTolerance(3, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(i1to3pop):
+                    tests.append(["P3A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P3A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-        elif(CompareWithTolerance(10, row["VA"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(3, row["IA"], 1) and
-            CompareWithTolerance(3, row["IB"], 1) and
-            CompareWithTolerance(3, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(i1to3pop):
-                tests.append(["P3A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P3A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+            elif(CompareWithTolerance(10, row["VA"], 1) and
+                CompareWithTolerance(10, row["VB"], 1) and
+                CompareWithTolerance(10, row["VC"], 1) and
+                CompareWithTolerance(6, row["IA"], 1) and
+                CompareWithTolerance(6, row["IB"], 1) and
+                CompareWithTolerance(6, row["IC"], 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
+                CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
+                ):
+                if(i1to3pop):
+                    tests.append(["P6A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
+                else:
+                    tests.append(["P6A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
+                    seti1to3True()
 
-        elif(CompareWithTolerance(10, row["VA"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(10, row["VB"], 1) and
-            CompareWithTolerance(6, row["IA"], 1) and
-            CompareWithTolerance(6, row["IB"], 1) and
-            CompareWithTolerance(6, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(i1to3pop):
-                tests.append(["P6A4to6",expectedVal, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P6A1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
-                seti1to3True()
+    if(CompareWithTolerance(1.5, row["VA"], 1) and
+        CompareWithTolerance(10, row["VB"], 1) and
+        CompareWithTolerance(15, row["VC"], 1) and
+        CompareWithTolerance(1, row["IA"], 1) and
+        CompareWithTolerance(2, row["IB"], 1) and
+        CompareWithTolerance(3, row["IC"], 1) and
+        CompareWithTolerance(1, row["PFDA"], .1) and
+        CompareWithTolerance(1, row["PFDB"], .1) and
+        CompareWithTolerance(1, row["PFDC"], .1)
+        ):
+        setvlowcompletetrue()
+                    
+    if(vlowcomplete):
+        for expectedVal in expectedVals["VH"]:
+            if(CompareWithTolerance(expectedVal, row["VA"], 1) and
+                CompareWithTolerance(expectedVal, row["VB"], 1) and
+                CompareWithTolerance(expectedVal, row["VC"], 1) and
+                CompareWithTolerance(0, row["IA"], 1) and
+                CompareWithTolerance(0, row["IB"], 1) and
+                CompareWithTolerance(0, row["IC"], 1) and
+                CompareWithTolerance(1, row["PFDA"], .1) and
+                CompareWithTolerance(1, row["PFDB"], .1) and
+                CompareWithTolerance(1, row["PFDC"], .1)
+                ):
+                
+                    tests.append(["VH1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0])
 
-    for expectedVal in expectedVals["VH"]:
-        if(CompareWithTolerance(expectedVal, row["VA"], 1) and
-            CompareWithTolerance(expectedVal, row["VB"], 1) and
-            CompareWithTolerance(expectedVal, row["VB"], 1) and
-            CompareWithTolerance(0, row["IA"], 1) and
-            CompareWithTolerance(0, row["IB"], 1) and
-            CompareWithTolerance(0, row["IC"], 1) and
-            CompareWithTolerance(1, row["PFDA"], .1) and
-            CompareWithTolerance(1, row["PFDB"], .1) and
-            CompareWithTolerance(1, row["PFDC"], .1)
-            ):
-            if(vlowcomplete):
-                tests.append(["VH1to3",expectedVal,row["VA"], row["VB"],row["VC"],0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+        for expectedPhaseVal in expectedVals["PFDA"]:
+            for expectedVal in phaseTests["HVPT"]:
+                if( CompareWithTolerance(expectedVal[1], row["VA"], 1) and
+                    CompareWithTolerance(expectedVal[1], row["VB"], 1) and
+                    CompareWithTolerance(expectedVal[1], row["VC"], 1) and
+                    CompareWithTolerance(1, row["IA"], 1) and
+                    CompareWithTolerance(1, row["IB"], 1) and
+                    CompareWithTolerance(1, row["IC"], 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDA"]), 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDB"]), 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDC"]), 1)
+                    ):
+                    tests.append([expectedVal[0],expectedPhaseVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0])
+        
+        for expectedVal in expectedVals["IH"]:
+            if( CompareWithTolerance(0, row["VA"], 1) and
+                CompareWithTolerance(0, row["VB"], 1) and
+                CompareWithTolerance(0, row["VC"], 1) and
+                CompareWithTolerance(expectedVal, row["IA"], 1) and
+                CompareWithTolerance(expectedVal, row["IB"], 1) and
+                CompareWithTolerance(expectedVal, row["IC"], 1) and
+                CompareWithTolerance(1, row["PFDA"], .1) and
+                CompareWithTolerance(1, row["PFDB"], .1) and
+                CompareWithTolerance(1, row["PFDC"], .1)
+                ):
+                
+                    tests.append(["IH1to3",expectedVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,row["IA"], row["IB"],row["IC"],0,0,0])
 
-    for expectedVal in expectedVals["PFDA"]:
-        if(CompareWithTolerance(5, row["VA"], 1) and
-            CompareWithTolerance(5, row["VB"], 1) and
-            CompareWithTolerance(5, row["VB"], 1) and
-            CompareWithTolerance(1, row["IA"], 1) and
-            CompareWithTolerance(1, row["IB"], 1) and
-            CompareWithTolerance(1, row["IC"], 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDA"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDB"]), 1) and
-            CompareWithTolerance(expectedVal, toPhase(row["PFDC"]), 1)
-            ):
-            if(v1to3pop):
-                tests.append(["P5V4to6",expectedVal,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-            else:
-                tests.append(["P5V1to3",expectedVal,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"]),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-
+        for expectedPhaseVal in expectedVals["PFDA"]:
+            for expectedVal in phaseTests["HIPT"]:
+                if( CompareWithTolerance(10, row["VA"], 1) and
+                    CompareWithTolerance(10, row["VB"], 1) and
+                    CompareWithTolerance(10, row["VC"], 1) and
+                    CompareWithTolerance(expectedVal[1], row["IA"], 1) and
+                    CompareWithTolerance(expectedVal[1], row["IB"], 1) and
+                    CompareWithTolerance(expectedVal[1], row["IC"], 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDA"]), 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDB"]), 1) and
+                    CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDC"]), 1)
+                    ):
+                    tests.append([expectedVal[0],expectedPhaseVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
 
     return row
 
