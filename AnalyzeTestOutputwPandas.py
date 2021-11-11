@@ -302,12 +302,12 @@ def FilterAndIdentify(row):
                 if(CompareWithTolerance(180, toPhase(row["PFDA"]), 1)):
                     seti1to3True()
 
-    if(CompareWithTolerance(1.5, row["VA"], 1) and
+    if(CompareWithTolerance(15, row["VA"], 1) and
         CompareWithTolerance(10, row["VB"], 1) and
         CompareWithTolerance(15, row["VC"], 1) and
-        CompareWithTolerance(1, row["IA"], 1) and
-        CompareWithTolerance(2, row["IB"], 1) and
-        CompareWithTolerance(3, row["IC"], 1) and
+        CompareWithTolerance(1.5, row["IA"], 1) and
+        CompareWithTolerance(1, row["IB"], 1) and
+        CompareWithTolerance(1.5, row["IC"], 1) and
         CompareWithTolerance(1, row["PFDA"], .1) and
         CompareWithTolerance(1, row["PFDB"], .1) and
         CompareWithTolerance(1, row["PFDC"], .1)
