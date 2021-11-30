@@ -370,7 +370,6 @@ def FilterAndIdentify(row):
                     CompareWithTolerance(expectedPhaseVal, toPhase(row["PFDC"]), 1)
                     ):
                     tests.append([expectedVal[0],expectedPhaseVal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,toPhase(row["PFDA"]), toPhase(row["PFDB"]),toPhase(row["PFDC"])])
-
     return row
 
 
@@ -396,15 +395,16 @@ def SetCurrentItem(val):
 def GetTestResults(row):
     if( isinstance(row["Item"], str)):
         SetCurrentItem(row["Item"])
-    else:
-        print(type(row["Item"]))
-    tempdf = testdf[(testdf == float(row["Level"]) ).any(axis = 1)]
-    tempdf = tempdf.filter(items = [currentItem])
-    tempdf = tempdf[(tempdf != 0).any(axis = 1)]
-    tempdf["Dif"] = np.absolute(tempdf[currentItem] - row["Level"])
-    maxdev = tempdf.iloc[tempdf['Dif'].argmax(), 0]
+    try:
+        tempdf = testdf[(testdf == float(row["Level"]) ).any(axis = 1)]
+        tempdf = tempdf.filter(items = [currentItem])
+        tempdf = tempdf[(tempdf != 0).any(axis = 1)]
+        tempdf["Dif"] = np.absolute(tempdf[currentItem] - row["Level"])
+        maxdev = tempdf.iloc[tempdf['Dif'].argmax(), 0]
+    except:
+        maxdev = "Not Tested/ Out of Range"
     results.append(maxdev)
-    print(tempdf.head(5))
+    print(currentItem, row["Level"], maxdev)
 
 results = []
 
