@@ -381,12 +381,15 @@ df.apply(lambda x: FilterAndIdentify(x), axis = 1)
 testdf = pd.DataFrame(tests, columns = testcols)
 testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\.FilteredData.xlsx")
 
-templatedf = pd.read_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx", )
+#templatepath = "\\data\\DobleF6150.xlsx"
+templatepath = "\\data\\DobleF6150Version3.xlsx"
+
+templatedf = pd.read_excel(os.path.dirname(os.path.realpath(__file__)) + templatepath, sheet_name = "AutoSection")
 currentItem = None
 
-wb2 = load_workbook(os.path.dirname(os.path.realpath(__file__)) + "\\data\\DobleF6150.xlsx")
-
-templatews1 = wb2.worksheets[0]
+print(templatedf.head(5))
+wb2 = load_workbook(os.path.dirname(os.path.realpath(__file__)) + templatepath,)
+templatews1 = wb2["AutoSection"]
 
 def SetCurrentItem(val):
     global currentItem
@@ -411,7 +414,7 @@ results = []
 templatedf.apply(lambda x: GetTestResults(x), axis = 1)
 i = 2
 for item in results:
-    templatews1.cell(i, 5).value = item
+    templatews1.cell(i, 9).value = item
     i = i+1
 
 wb2.save(os.path.dirname(os.path.realpath(__file__)) + "\\Results.xlsx")

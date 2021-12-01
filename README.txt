@@ -12,5 +12,12 @@ pip install easygui
 pip install openpyxl
 
 pip install pyinstaller
-pyinstaller yourProgramName.py
 
+To create a single run application (no need for debug environment...) ** from running directory (in terminal) **
+{
+    pyinstaller AnalyzeTestOutputwPandas.py
+    cd App
+    pyinstaller ../AnalyzeTestOutputwPandas.py --noconfirm
+    xcopy ..\data .\dist\AnalyzeTestOutputwPandas\data /E/H/I
+} 
+You can then copy and paste the App/dist/AnalyzeTestOutputwPandas folder to whereever you'd like.
