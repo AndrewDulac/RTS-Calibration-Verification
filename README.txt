@@ -21,3 +21,5 @@ To create a single run application (no need for debug environment...) ** from ru
     xcopy ..\data .\dist\AnalyzeTestOutputwPandas\data /E/H/I
 } 
 You can then copy and paste the App/dist/AnalyzeTestOutputwPandas folder to whereever you'd like.
+
+Avoid touching anything in the data folder, this is set in stone for the script to work correctly!
