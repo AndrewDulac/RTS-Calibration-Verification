@@ -9,14 +9,15 @@
 #  pyinstaller yourprogram.py
 #  pyinstaller -F yourprogram.py
 import pandas as pd
-from easygui import fileopenbox
 import openpyxl
 from openpyxl import load_workbook, Workbook
-from easygui import fileopenbox
+from easygui import fileopenbox, msgbox
 from datetime import datetime, timedelta, time
 import numpy as np
 import csv
 import os
+from pathlib import Path
+from datetime import datetime
 
 def CellIdForValueInColumn(val, col):
     rowId = 1
@@ -28,9 +29,13 @@ def CellIdForValueInColumn(val, col):
         focusedCell = ws1[cellId]
     return col,rowId
 
-fn = fileopenbox()
-#fn = 'C:\\Users\\andre\\Documents\\School\\Fall2021Semester\\ECE 591\\RTS-Calibration-Verification\\data\\11-2-21-CLEAN.xlsx'
+
+downloads_path = str(Path.home() / "Downloads")
+
+fn = fileopenbox(default = downloads_path)
+
 if(fn.endswith('.csv')):
+    print("Reformatting file...")
     wb = Workbook()
     ws = wb.active
     with open(fn) as f:
@@ -59,6 +64,7 @@ focusedCell = ws1[cellId]
 
 col,row = CellIdForValueInColumn("Record", 'A')
 
+print("Loading file...")
 if(fn.endswith('.csv')):
     df = pd.read_excel(temppath, skiprows=(row-1))
 else:
@@ -377,17 +383,16 @@ df['Time'] = df['Time'].map(lambda x: x.replace(" ", ""))
 pd.to_datetime(df['Time'], format='%H:%M:%S')
 df.set_index('Time', inplace=True)
 
+print("Filtering data...")
 df.apply(lambda x: FilterAndIdentify(x), axis = 1)
 testdf = pd.DataFrame(tests, columns = testcols)
 testdf.to_excel(os.path.dirname(os.path.realpath(__file__)) + "\\data\\.FilteredData.xlsx")
 
-#templatepath = "\\data\\DobleF6150.xlsx"
-templatepath = "\\data\\DobleF6150Version3.xlsx"
+templatepath = "\\data\\DobleF6150.xlsx"
 
 templatedf = pd.read_excel(os.path.dirname(os.path.realpath(__file__)) + templatepath, sheet_name = "AutoSection")
 currentItem = None
 
-print(templatedf.head(5))
 wb2 = load_workbook(os.path.dirname(os.path.realpath(__file__)) + templatepath,)
 templatews1 = wb2["AutoSection"]
 
@@ -410,13 +415,23 @@ def GetTestResults(row):
     print(currentItem, row["Level"], maxdev)
 
 results = []
-
+print("Storing filtered data...")
 templatedf.apply(lambda x: GetTestResults(x), axis = 1)
 i = 2
 for item in results:
     templatews1.cell(i, 9).value = item
     i = i+1
 
-wb2.save(os.path.dirname(os.path.realpath(__file__)) + "\\Results.xlsx")
+# datetime object containing current date and time
+now = datetime.now()
+ 
+print("now =", now)
+
+# dd_mm_YY
+dt_string = now.strftime("_%d-%m-%Y_%H.%M.%S")
+
+
+wb2.save(downloads_path + "\\DobleF6150" + dt_string + ".xlsx")
+msgbox("The results file has been generated here: " + downloads_path + "\\DobleF6150" + dt_string + ".xlsx")
 
 

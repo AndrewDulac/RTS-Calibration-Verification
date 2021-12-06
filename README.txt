@@ -15,7 +15,6 @@ pip install pyinstaller
 
 To create a single run application (no need for debug environment...) ** from running directory (in terminal) **
 {
-    pyinstaller AnalyzeTestOutputwPandas.py
     cd App
     pyinstaller ../AnalyzeTestOutputwPandas.py --noconfirm
     xcopy ..\data .\dist\AnalyzeTestOutputwPandas\data /E/H/I
